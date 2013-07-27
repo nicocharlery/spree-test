@@ -13,8 +13,15 @@ describe Spree::CheckoutController do
   end
 
   context "#update" do
+    before do
+      order.stub :confirmation_required? => true
+      order.update_column(:state, "confirm")
+      order.stub :user => user
+      create(:payment, :amount => order.total, :order => order)
+      order.payments.reload
+    end
     it "should remove completed order from the session" do
-      spree_post :update, {:state => "confirm"}, {:order_id => "foofah"}
+      spree_post :update, {:state => "confirm"}, {:order_id => order.id}
       session[:order_id].should be_nil
     end
   end
