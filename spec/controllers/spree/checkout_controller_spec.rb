@@ -16,11 +16,13 @@ describe Spree::CheckoutController do
       order.stub :confirmation_required? => true
       order.update_column(:state, "confirm")
       order.stub :user => user
+      order.stub :available_shipping_methods => [stub_model(Spree::ShippingMethod)]
+      order.stub :available_payment_methods => [stub_model(Spree::PaymentMethod)]
       create(:payment, :amount => order.total, :order => order)
       order.payments.reload
     end
 
-    it "should remove completed order from the session" do
+    it "should keeps original behaviour" do
       spree_post :update, {:state => "confirm"}, {:order_id => order.id}
       session[:order_id].should be_nil
     end
@@ -30,6 +32,16 @@ describe Spree::CheckoutController do
       payment = order.payments.first
       credit_card = Spree::CreditCard.where(id: payment.source_id).first
       expect(credit_card.user_id).to eq user.id
+    end
+
+    context "when a returning user" do
+      it "should add each users credit card as a payment method" do
+        expected_user_credit_card = create(:credit_card, user_id: user.id)
+        spree_post :update, {:state => "confirm"}, {:order_id => order.id}
+
+        returned_user_credit_card = assigns(:user_credit_cards).first
+        expect(returned_user_credit_card.last_digits).to eq expected_user_credit_card.last_digits
+      end
     end
   end
 end
