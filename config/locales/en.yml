@@ -2,4 +2,10 @@
 # See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  spree:
+    checkout:
+      payment:
+        gateway:
+          choose: "Choose this card"
+          pick_a_card: "Pick one of your cards:"
+          create_new_one: "Or create a new one:"

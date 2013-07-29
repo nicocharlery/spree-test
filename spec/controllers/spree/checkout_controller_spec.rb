@@ -37,7 +37,7 @@ describe Spree::CheckoutController do
     context "when a returning user" do
       it "should add each users credit card as a payment method" do
         expected_user_credit_card = create(:credit_card, user_id: user.id)
-        spree_post :update, {:state => "confirm"}, {:order_id => order.id}
+        spree_get :edit, { :state => 'payment' }, { :access_token => token }
 
         returned_user_credit_card = assigns(:user_credit_cards).first
         expect(returned_user_credit_card.last_digits).to eq expected_user_credit_card.last_digits

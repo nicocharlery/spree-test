@@ -1,0 +1,26 @@
+<%- if @user_credit_cards.any? %>
+  <p> <%= t('.pick_a_card') %></p>
+
+  <table>
+    <%- @user_credit_cards.each do |ucc| %>
+      <tr>
+        <td><%= ucc.last_digits %></td>
+        <td>
+          <%= form_for @order, :url => update_checkout_path(@order.state), :html => { :id => "checkout_form_#{@order.state}" } do |form| %>
+            <% param_prefix = "payment_source[#{payment_method.id}]" %>
+            <%= hidden_field param_prefix, 'first_name', :value => @order.billing_firstname %>
+            <%= hidden_field param_prefix, 'last_name', :value => @order.billing_lastname %>
+            <%= hidden_field param_prefix, 'number', :value => ucc.number %>
+            <%= hidden_field param_prefix, 'verification_value', :value => ucc.verification_value %>
+            <%= hidden_field param_prefix, 'month', :value => ucc.month %>
+            <%= hidden_field param_prefix, 'year', :value => ucc.year %>
+
+            <%= submit_tag t('.choose') %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+
+  <p> <%= t('.create_new_one') %></p>
+<% end %>
